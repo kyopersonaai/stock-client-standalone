@@ -28,6 +28,23 @@ import {
 } from 'lucide-react';
 
 const StockList = () => {
+  // ---------- 숫자 필터 안전 파서 ----------
+  const toFiniteNumber = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  const toWonFromEok = (value) => {
+    const n = toFiniteNumber(value);
+    return n === undefined ? undefined : n * 100000000;
+  };
+
+  const toSharesFromMan = (value) => {
+    const n = toFiniteNumber(value);
+    return n === undefined ? undefined : n * 10000;
+  };
+  // ----------------------------------------
+
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('market_cap'); // market_cap, name, code, change_rate
@@ -93,9 +110,9 @@ const StockList = () => {
       market: marketFilter,
       // F-8: 추가 필터 파라미터
       change_type: changeFilter,
-      market_cap_min: marketCapMin ? parseFloat(marketCapMin) * 100000000 : undefined, // 억원 -> 원
-      market_cap_max: marketCapMax ? parseFloat(marketCapMax) * 100000000 : undefined,
-      volume_min: volumeMin ? parseInt(volumeMin) * 10000 : undefined, // 만주 -> 주
+      market_cap_min: toWonFromEok(marketCapMin), // 억원 -> 원
+      market_cap_max: toWonFromEok(marketCapMax),
+      volume_min: toSharesFromMan(volumeMin), // 만주 -> 주 
       sector: sectorFilter
     }),
   });
